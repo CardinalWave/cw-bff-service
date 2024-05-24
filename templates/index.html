@@ -203,7 +203,8 @@
       
   </div>
   <script>
-    socket = new WebSocket("ws:/" + "/" + location.host + ":81");
+    console.log(window.location.host)
+    socket = new WebSocket("ws:/" + "/" + window.location.hostname + ":81");
     socket.onopen = function(e) { console.log("[socket] socket.onopen "); };
     socket.onerror = function(e) { console.log("[socket] socket.onerror "); };
 
