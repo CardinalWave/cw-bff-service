@@ -13,6 +13,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia todos os arquivos do diretório atual para o diretório de trabalho no contêiner
 COPY . .
 
+# Define variáveis de ambiente para o IP e porta do MQTT
+ENV MQTT_BROKER_IP=192.168.12.1
+ENV MQTT_BROKER_PORT=1883
+
 # Expor a porta 5000 para o Flask
 EXPOSE 5000
 

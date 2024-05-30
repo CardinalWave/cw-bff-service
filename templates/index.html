@@ -205,18 +205,19 @@
   <script>
     console.log(window.location.host)
     let token = "";
-    socket = new WebSocket("ws:/" + "/" + window.location.hostname + ":81");
+    socket = new WebSocket("ws:/" + "/" + window.location.hostname + ":5000");
     socket.onopen = function(e) { console.log("[socket] socket.onopen "); };
     socket.onerror = function(e) { console.log("[socket] socket.onerror "); };
 
     socket.onmessage = function(e) {
-	console.log("[socket] " + e.data);
-	const message = JSON.parse(event.data);
-	if (message.token !== "") {
-	    //token = message.token;
-	    alert("Token encontrado: ", message.token);
-	}
+	    console.log("[socket] " + e.data);
+      const message = JSON.parse(event.data);
+        if (message.token !== "") {
+          alert(`Token encontrado: ${message.token}`);
+          token = message.token;
+        }
     };
+
     function generateId() {
 	    return "sessionid_" + Math.random().toString(36).substr(2,9);
     }
@@ -257,14 +258,13 @@
       let request = JSON.stringify(session);	
       console.log(session);		
       socket.send(request);
-      socket.send(request);
       ipt_user.value = '';
       ipt_pass.value = '';
       console.log(login);
-	if (token !== "") {
-	    document.getElementById("login").remove();
-	    showChatList();
-	}
+    // if (token !== "") {
+        document.getElementById("login").remove();
+        showChatList();
+    // }
    });        	
    function showChat() {
       document.getElementById('chat').style.display = 'block';
