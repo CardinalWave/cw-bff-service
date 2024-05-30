@@ -1,0 +1,81 @@
+@startuml
+class main {
+  -mqtt_broker_ip
+  -mqtt_broker_port
+  +index("/") : render_template(template_name: index.html)
+  +void __name__== "__main__"
+}
+
+class session_composer {
+  -handler: message_handler
+  +__init__(self, payload, message_type)
+  +handle(self, message): void
+}
+
+interface message_strategy{
+  +handle_message(self, message)
+}
+
+class websocket_strategy {
+  +handle_message(self, message)
+}
+
+class mqtt_strategy {
+  +handle_message(self, message)
+}
+
+class message_handler {
+  -strategy: message_strategy
+  +__init__(self, strategy: message_strategy)
+  +set_strategy(self, strategy: message_strategy)
+  +handle(self, message)
+}
+' Relacionamento entre as classes
+session_composer ..> message_handler : utiliza
+session_composer ..> websocket_strategy : utiliza
+session_composer ..> mqtt_strategy : utiliza
+
+' Relacionamento entre message_handler e message_strategy
+message_handler ..|> message_strategy
+websocket_strategy ..|> message_strategy
+mqtt_strategy ..|> message_strategy
+
+' Relacionamento mqtt_strategy
+mqtt_strategy ..|> Callbacks
+
+
+class mqtt_connection{}
+main <--> mqtt_connection
+mqtt_connection <--> session_composer
+
+class WebSocketServer {
+    echo()
+    close()
+        sockets
+    __init__()
+}
+
+main <--> WebSocketServer
+WebSocketServer <--> session_composer
+
+
+class Callbacks {
+  +on_connect(client, userdata, flags, reason_code)
+  +on_message(client, userdata, msg)
+  +on_publish(client, userdata, result)
+}
+
+class MqttBroker {
+}
+
+class RemoteMicroservice {
+  +on_message(client, userdata, msg)
+  +call_service(data: dict) : dict
+}
+
+RemoteMicroservice --> MqttBroker : connect to
+Callbacks --> RemoteMicroservice
+
+
+
+@enduml
