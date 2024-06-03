@@ -9,11 +9,8 @@ class MqttStrategy(MessageStrategy):
     def handle_message(self, session_payload: SessionPayload, connection: ConnecionManager):
 
         session = session_payload.session
-
-        
         
         session_id = session.session_id
-
 
         client = connection.find_session_id(session_id[0])
         print(session_payload.package())

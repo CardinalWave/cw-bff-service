@@ -3,8 +3,6 @@ from src.data.use_cases.websocket_strategy import WebSocketStrategy
 from src.data.use_cases.mqtt_strategy import MqttStrategy
 from src.presentation.session_payload import SessionPayload
 from src.data.use_cases.connection_manager import ConnecionManager
-from src.domain.models.client import Client 
-
 
 class SessionComposer:
 

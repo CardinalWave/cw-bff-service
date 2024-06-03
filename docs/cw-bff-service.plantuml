@@ -1,0 +1,133 @@
+@startuml
+class main.init {
+  server = WSGIServer(host, port)
+  session_composer = SessionComposer(mqtt_client.client)
+  mqtt_client.set_session_composer(session_composer)
+  sockets = WebSocketServer(app, session_composer)
+  session_composer.set_sockets(sockets)
+  server.serve_forever()
+}
+
+main <--> MQTTClient
+main <-- SessionComposer
+main <--> WebSocketServer
+
+class MQTTClient {
+    - broker_ip: str
+    - broker_port: int
+    - client: mqtt.Client
+    - connected: bool
+    - session_composer: SessionComposer
+
+    + __init__(broker_ip: str, broker_port: int)
+    + set_session_composer(session_composer: SessionComposer)
+    + on_connect(client, userdata, flags, reason_code)
+    + on_message(client, userdata, msg)
+    + on_publish(client, userdata, result)
+    + connect()
+}
+
+class WebSocketServer {
+    - sockets: WebSockets
+    - clients: dict
+
+    + __init__(app, session_composer: SessionComposer)
+    -echo(message)
+    -close(ws)
+}
+
+class SessionComposer{
+  -mqtt_client
+  -websocket_server
+  -session_id
+  -clients
+  -connection_manager
+  -handler
+  +__init__(mqtt_client)
+  +receiver(message_type, message)
+  -_handle(session_payload)
+  +set_sockets(websocketserver)
+  +update_socket(active_sockets)
+}
+
+
+SessionComposer --> ConnectionManager
+SessionComposer --> MessageHandler
+
+class MessageHandler{
+  -_strategy: MessageStrategy
+  -_connection 
+  +__init__(strategy: MessageStrategy, connection: any)
+  +set_strategy(self, strategy: MessageStrategy)
+  +handle(self, message): Session
+}
+
+interface MessageStrategy{
+  +handle_message(session_payload: SessionPayload, connection, clients): Session
+}
+
+MessageHandler *.. MessageStrategy
+MessageStrategy <|-- MqttStrategy : message_type=mqtt
+MessageStrategy <|-- WebSocketStrategy : message_type=websocket
+
+class MqttStrategy {
+    +handle_message(session_payload: SessionPayload, connection: ConnecionManager)
+}
+
+MqttStrategy --> ConnectionManager
+
+class WebSocketStrategy {
+    +handle_message(session_payload: SessionPayload, connection: mqttc)
+}
+
+class mqttc {
+    +publish(topic, message)
+}
+
+WebSocketStrategy --> mqttc
+
+
+class SessionPayload {
+    - payload: Session
+    - session: Session
+
+    + __init__(payload: Session)
+    - _serialization(): Session
+    - _to_json(package_dict: any): str
+    + package(): str
+}
+
+class Session {
+    - device_id: str
+    - session_id: str
+    - action: str
+    - payload: any
+
+    + __init__(device_id: str, session_id: str, action: str, payload: any)
+    + to_dict(): dict
+    + to_json(): str
+}
+
+SessionPayload --> Session
+MessageStrategy --> SessionPayload
+
+class ConnectionManager {
+    - sockets: list
+    - clients: dict
+
+    + __init__(active_sockets: list)
+    + update_clients(active_sockets: list, session_id: str): list
+    + find_session_id(session_id: str): Client
+    + send_message(client: Client, message: str)
+}
+
+class Client {
+    - socket: any
+    - session_id: str
+
+    + __init__(socket: any, session_id: str)
+}
+
+ConnectionManager --> Client
+
+@enduml

@@ -18,6 +18,3 @@ class WebSocketServer:
         def close(ws):
             # self.clients.remove(ws)
             print("Cliente desconectado")
-
-    def ok():
-        print("ok")

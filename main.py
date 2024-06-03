@@ -13,7 +13,6 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
-
 if __name__ == "__main__":
     mqtt_client = MQTTClient("localhost", 1883)
     mqtt_client.connect()

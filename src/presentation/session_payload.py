@@ -1,8 +1,7 @@
 import json
 from src.domain.models.sessions import Session
-from src.presentation.interface.session_interface import SessionInterface
 
-class SessionPayload(SessionInterface):
+class SessionPayload():
 
     def __init__(self, payload: Session):
         self.payload = payload
