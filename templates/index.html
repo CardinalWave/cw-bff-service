@@ -209,13 +209,18 @@
     socket.onopen = function(e) { console.log("[socket] socket.onopen "); };
     socket.onerror = function(e) { console.log("[socket] socket.onerror "); };
 
+    let status = "";
+
     socket.onmessage = function(e) {
-	    console.log("[socket] " + e.data);
-      const message = JSON.parse(event.data);
-        if (message.token !== "") {
-          alert(`Token encontrado: ${message.token}`);
-          token = message.token;
-        }
+      console.log("[socket] " + e.data);
+      const message = JSON.parse(e.data);
+      const payload = message['payload'];
+      const token = payload['token'];
+      if (token !== undefined && status === "login") {
+        alert(`Token encontrado: ${token}`);
+        document.getElementById("login").remove();
+        showChatList();
+      }
     };
 
     function generateId() {
@@ -260,11 +265,7 @@
       socket.send(request);
       ipt_user.value = '';
       ipt_pass.value = '';
-      console.log(login);
-    // if (token !== "") {
-        document.getElementById("login").remove();
-        showChatList();
-    // }
+      status = "login"
    });        	
    function showChat() {
       document.getElementById('chat').style.display = 'block';
@@ -274,7 +275,6 @@
       document.getElementById("chat-list").remove();
       showChat();
     }
-     
 
   </script>
  </body>
