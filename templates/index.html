@@ -173,10 +173,10 @@
     <div id="login">
       <div><h1>CardinalWave</h1></div>
       <h3>Usuario</h3>
-      <input type="text" id="iptUser">
+      <input type="text" id="ipt-user">
       <h3>Senha</h3>
-      <input type="password" id="iptPassword">
-      <button id="btnLogin">Entrar</button>
+      <input type="password" id="ipt-password">
+      <button id="btn-login">Entrar</button>
     </div>
     <div id="chat-list">
       <div class="header">
@@ -197,8 +197,8 @@
         <!-- More messages will go here -->
       </div>
       <div class="input-box">
-        <input type="text" placeholder="Type your message..." id="message-input">
-        <button id="send-button">Send</button>
+        <input type="text" placeholder="Type your message..." id="ipt-message">
+        <button id="btn-send">Send</button>
       </div>
       
   </div>
@@ -210,6 +210,7 @@
     socket.onerror = function(e) { console.log("[socket] socket.onerror "); };
 
     let status = "";
+    let chat_section = "";
 
     socket.onmessage = function(e) {
       console.log("[socket] " + e.data);
@@ -247,10 +248,10 @@
       document.getElementById('chat-list').style.display = 'block';
     }
 
-    let btn_login = document.getElementById("btnLogin");  
+    let btn_login = document.getElementById("btn-login");  
     btn_login.addEventListener("click", function() {
-   	  let ipt_pass = document.getElementById("iptPassword");
-      let ipt_user = document.getElementById("iptUser"); 
+   	  let ipt_pass = document.getElementById("ipt-password");
+      let ipt_user = document.getElementById("ipt-user"); 
 
     	const login = {		
 	      username:ipt_user.value,
@@ -260,20 +261,39 @@
       session.action = "login"
       session.payload = login;
 	
-      let request = JSON.stringify(session);	
-      console.log(session);		
+      let request = JSON.stringify(session);
+      console.log(request)
       socket.send(request);
       ipt_user.value = '';
       ipt_pass.value = '';
       status = "login"
    });        	
-   function showChat() {
+   function showChat(section) {
       document.getElementById('chat').style.display = 'block';
     }
     
-    function handleUserClick(username) {
+    let btn_send = document.getElementById("btn-send");  
+    btn_send.addEventListener("click", function() {
+   	  let ipt_message = document.getElementById("ipt-message");
+
+    	const message = {
+	      mensage:ipt_message.value,
+        section:chat_section
+      };
+	
+      session.action = "message"
+      session.payload = message;
+	
+      let request = JSON.stringify(session);	
+      console.log(request)
+      // socket.send(request);
+      
+   });
+
+    function handleUserClick(section) {
       document.getElementById("chat-list").remove();
-      showChat();
+      chat_section = section;
+      showChat(chat_section);
     }
 
   </script>
