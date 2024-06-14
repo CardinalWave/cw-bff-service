@@ -1,18 +1,13 @@
 # Use a imagem base do Python
 FROM python:3.11-alpine    
 
-# Instale as dependecias do sistema
-#RUN apt-get update && \ 
-#    apt-get install -y git && \
-#    apt-get clean && \
-#    rm -rf /var/lib/apt/lists/*s|
-
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
 # Copia o arquivo requirements.txt para o diretório de trabalho
 COPY requirements.txt .
 
+# Instala as propriedades necessarias
 RUN apk add --no-cache git build-base
 
 # Instala as dependências do Python
