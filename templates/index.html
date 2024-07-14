@@ -2,18 +2,22 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta charset="viewport" content="width=device-width, initial-scale=1">
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
     <title>CardinalWave</title>
     <style>
       body {
         font-family: 'Segoe UI', sans-serif;
-        /* display: flex; */
         background-color: #110F1A;
         margin: 0;
         padding: 0;
         color: #f5f2f2;
+        display: block;
+        overflow: hidden;
       }
+
       #app {
         max-width: 100%;
         height: 100%;
@@ -21,36 +25,52 @@
         padding: 20px;
         border-radius: 5px;
       }
+
       #login {
-        margin-top: 50%;
+        margin:auto;
+        margin-top: 10rem;
+        width: 90%;
         padding: 10px;
         border: 1px solid #110f1a8e;
-        border-radius: 5px;
+        border-radius: 20px;
         background-color: #2f2d3b;
       }
 
-      #login h1 {
-        font-size: 30px;
-        text-align: center;
+      @media (max-width: 600px) {
+      .elemento {
+            width: 100%;
+            height: auto;
+            background-color: red;
+        }
       }
 
       .message-container {
 	    margin-bottom: 10px;
       }
+
       .message-container strong {
 	    color: #333;
       }
+
       input {
-        width: calc(100% - 70px);
+        width: 100%;
         margin-right: 10px;
-        padding: 8px;
+        /* padding: 8px; */
         border: 1px solid #ccc;
         border-radius: 3px;
         box-sizing: border-box;
-        font-size: 70%;
+        font-size: 30px;
       }
-      button {
-        padding: 8px 15px;
+
+      .btn-inputs{
+        display: flex;
+        justify-content: space-between; /* Distribui os itens flexíveis com espaçamento entre eles */
+        align-items: center; /* Alinha os itens verticalmente ao centro */
+      }
+
+      .btn-login {
+        text-align: right;
+        padding: 10px 40px;
         margin-top:5px;
         background-color: #00ff89;
         color: #1f1f1f;
@@ -61,8 +81,25 @@
         font-weight: bold;
         transition: box-shadow 0.3s ease-in-out #00ff8873;
       }
-      button:hover {
+      .btn-login:hover {
         box-shadow: 0 0 3px 4px #00ff8873;
+      }
+      
+      .btn-register {
+        text-align: left;
+        padding: 10px 40px;
+        margin-top:5px;
+        background-color: #f75750;
+        color: #1f1f1f;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: bold;
+        transition: box-shadow 0.3s ease-in-out #F7614F;
+      }
+      .btn-register:hover {
+        box-shadow: 0 0 3px 4px #F7614F;
       }
       #chat-list {
         display: none;
@@ -165,19 +202,204 @@
       .chat-box::-webkit-scrollbar-thumb:hover {
           background-color: #00cc70;
       }
+
+      :root {
+        --offset-size: 10rem;
+        --size: -0;
+        --border-color: #000000;
+        --neon-color: #1EF5F3;
+        --neon-color-2: #1BE9C1;
+        --neon-color-3: #1BE984;
+        --neon-default-color: #910900;
+        --neon-secundary: #9ac8b4;
+    }
+
+    body {
+        min-height: 100vh;
+        min-width: 100vw;
+    }
+
+    .cardinal {
+        /* transform: scale(0.9); */
+        background-color: #ffdcb4;
+        border: 10px solid #000;
+        border-radius: 50%;
+        margin-top: 20rem;
+        margin-bottom: 12rem;
+        margin: auto;
+        width: 10em;
+        height: 10em;
+    }
+    
+    h1 {
+        font-size: 30px;
+        /* margin-top: 80%; */
+        text-align: center;
+    }
+
+    .pixel {
+        transform: scale(0.4);
+        width: 1rem;
+        height: 1rem;
+        margin-top: 4rem;
+        margin-left: 0.6rem;
+        --shadow-color-2: #00ffff;
+        --shadow-color-3: #ff0000;
+        box-shadow: 
+        
+        0rem -2rem 0 var(--size) var(--border-color),
+        1rem -2rem 0 var(--size) var(--border-color),
+        2rem -1rem 0 var(--size) var(--border-color),
+        3rem -1rem 0 var(--size) var(--border-color),
+        4rem 0rem 0 var(--size) var(--border-color),
+        5rem 0rem 0 var(--size) var(--border-color),
+        6rem 0rem 0 var(--size) var(--border-color),
+        7rem 0rem 0 var(--size) var(--border-color),
+        8rem 0rem 0  var(--size) var(--border-color),
+        9rem -3rem 0 var(--size) var(--border-color),
+        9rem -2rem 0 var(--size) var(--border-color),
+        9rem -1rem 0 var(--size) var(--border-color),
+        10rem -3rem 0  var(--size) var(--border-color),
+        11rem -2rem 0  var(--size) var(--border-color),
+        12rem -1rem 0 var(--size) var(--border-color),
+        13rem 0rem 0 var(--size) var(--border-color),
+        14rem 0rem 0 var(--size) var(--border-color),
+        15rem 0rem 0 var(--size) var(--border-color),
+        16rem 0rem 0 var(--size) var(--border-color),
+        17rem 0rem 0 var(--size) var(--border-color),
+        18rem 0rem 0 var(--size) var(--border-color),
+        19rem 1rem 0 var(--size) var(--border-color),
+        20rem 2rem 0 var(--size) var(--border-color),
+        19rem 3rem 0 var(--size) var(--border-color),
+
+
+        /* Baixo */
+        0rem -1rem 0 var(--size) var(--border-color),
+        1rem 0rem 0 var(--size) var(--border-color),
+        2rem 1rem 0 var(--size) var(--border-color),
+        2rem 2rem 0 var(--size) var(--border-color),
+        1rem 3rem 0 var(--size) var(--border-color),
+        0rem 4rem 0 var(--size) var(--border-color),
+        0rem 5rem 0 var(--size) var(--border-color),
+        1rem 5rem 0 var(--size) var(--border-color),
+        2rem 4rem 0 var(--size) var(--border-color),
+        3rem 4rem 0 var(--size) var(--border-color),
+        4rem 3rem 0 var(--size) var(--border-color),
+        5rem 3rem 0 var(--size) var(--border-color),
+        6rem 3rem 0 var(--size) var(--border-color),
+        7rem 3rem 0 var(--size) var(--border-color),
+        8rem 3rem 0  var(--size) var(--border-color),
+        9rem 4rem 0 var(--size) var(--border-color),
+        9rem 5rem 0 var(--size) var(--border-color),
+        10rem 5rem 0  var(--size) var(--border-color),
+        11rem 4rem 0  var(--size) var(--border-color),
+        12rem 4rem 0 var(--size) var(--border-color),
+        13rem 4rem 0 var(--size) var(--border-color),
+        14rem 4rem 0 var(--size) var(--border-color),
+        15rem 4rem 0 var(--size) var(--border-color),
+        16rem 4rem 0 var(--size) var(--border-color),
+        17rem 4rem 0 var(--size) var(--border-color),
+        18rem 4rem 0 var(--size) var(--border-color),
+
+        /* Cores */
+        4rem 1rem 0 var(--size) var(--neon-color),
+        5rem 1rem 0 var(--size) var(--neon-color),
+        6rem 1rem 0 var(--size) var(--neon-color),
+        7rem 1rem 0 var(--size) var(--neon-color),
+        8rem 1rem 0 var(--size) var(--neon-color),
+        9rem 1rem 0 var(--size) var(--neon-color),
+        10rem 1rem 0 var(--size) var(--neon-color),
+        11rem 1rem 0 var(--size) var(--neon-color),
+        12rem 1rem 0 var(--size) var(--neon-color),
+        13rem 1rem 0 var(--size) var(--neon-color),
+        14rem 1rem 0 var(--size) var(--neon-color),
+        15rem 1rem 0 var(--size) var(--neon-color),
+        16rem 1rem 0 var(--size) var(--neon-color),
+        17rem 1rem 0 var(--size) var(--neon-color),
+        18rem 1rem 0 var(--size) var(--neon-color),
+        4rem 1rem 0 var(--size) var(--neon-color),
+
+        4rem 2rem 0 var(--size) var(--neon-default-color),
+        5rem 2rem 0 var(--size) var(--neon-default-color),
+        6rem 2rem 0 var(--size) var(--neon-default-color),
+        7rem 2rem 0 var(--size) var(--neon-default-color),
+        8rem 2rem 0 var(--size) var(--neon-default-color),
+        9rem 2rem 0 var(--size) var(--neon-default-color),
+        9rem 3rem 0 var(--size) var(--neon-default-color),
+        10rem 2rem 0 var(--size) var(--neon-default-color),
+        10rem 3rem 0 var(--size) var(--neon-default-color),
+        10rem 4rem 0 var(--size) var(--neon-default-color),
+        11rem 2rem 0 var(--size) var(--neon-default-color),
+        11rem 3rem 0 var(--size) var(--neon-default-color),
+        12rem 2rem 0 var(--size) var(--neon-default-color),
+        12rem 3rem 0 var(--size) var(--neon-default-color),
+        13rem 2rem 0 var(--size) var(--neon-default-color),
+        13rem 3rem 0 var(--size) var(--neon-default-color),
+        14rem 2rem 0 var(--size) var(--neon-default-color),
+        14rem 3rem 0 var(--size) var(--neon-default-color),
+        15rem 2rem 0 var(--size) var(--neon-default-color),
+        15rem 3rem 0 var(--size) var(--neon-default-color),
+        16rem 2rem 0 var(--size) var(--neon-default-color),
+        16rem 3rem 0 var(--size) var(--neon-default-color),
+        17rem 2rem 0 var(--size) var(--neon-default-color),
+        17rem 3rem 0 var(--size) var(--neon-default-color),
+        18rem 2rem 0 var(--size) var(--neon-default-color),
+        18rem 3rem 0 var(--size) var(--neon-default-color),
+        4rem 3rem 0 var(--size) var(--neon-default-color),
+        19rem 2rem 0 var(--size) var(--neon-default-color),
+        3rem 2rem 0 var(--size) var(--neon-secundary),
+        3rem 3rem 0 var(--size) var(--neon-secundary),
+        2rem 3rem 0 var(--size) var(--neon-secundary),
+        1rem 4rem 0 var(--size) var(--neon-secundary),
+        3rem 1rem 0 var(--size) var(--neon-secundary),
+        3rem 0rem 0 var(--size) var(--neon-secundary),
+        2rem 0rem 0 var(--size) var(--neon-secundary),
+        1rem -1rem 0 var(--size) var(--neon-secundary),
+        /* // */
+        9rem 0rem 0 var(--size) var(--neon-secundary),
+        10rem 0rem 0 var(--size) var(--neon-secundary),
+        11rem 0rem 0 var(--size) var(--neon-secundary),
+        12rem 0rem 0 var(--size) var(--neon-secundary),
+        13rem 0rem 0 var(--size) var(--neon-secundary),
+        14rem 0rem 0 var(--size) var(--neon-secundary),
+        15rem 0rem 0 var(--size) var(--neon-secundary),
+        10rem -1rem 0 var(--size) var(--neon-secundary),
+        11rem -1rem 0 var(--size) var(--neon-secundary),
+        10rem -2rem 0 var(--size) var(--neon-secundary);
+
+        transition: box-shadow 1s ease-in-out;
+        animation: mudarCores 5s linear infinite;
+    }
+    @keyframes mudarCores {
+        0%, 100% {
+          --neon-color: var(--neon-color);
+        }
+        50% {
+            --neon-color: var(--neon-color-2);
+        }
+        60% {
+            --neon-color: var(--neon-color-3)
+        }
+    }
     </style>
 
   </head>
 
   <body>
   <div id="app">
+    <div class="cardinal">
+      <div class="pixel"></div>
+    </div>
+    <h1>CardinalWave</h1>
     <div id="login">
-      <div><h1>CardinalWave</h1></div>
       <h3>Usuario</h3>
       <input type="text" id="ipt-user">
       <h3>Senha</h3>
       <input type="password" id="ipt-password">
-      <button id="btn-login">Entrar</button>
+      <div class="btn-inputs">
+        <button id="btn-login" class="btn-login">Entrar</button>
+        <button id="btn-register" class="btn-register">Criar</button>
+      </div>
     </div>
     <div id="chat-list">
       <div class="header">
@@ -268,7 +490,8 @@
       ipt_user.value = '';
       ipt_pass.value = '';
       status = "login"
-   });        	
+   });
+
    function showChat(section) {
       document.getElementById('chat').style.display = 'block';
     }
