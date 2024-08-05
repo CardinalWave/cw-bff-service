@@ -428,7 +428,8 @@
   <script>
     console.log(window.location.host)
     let token = "";
-    socket = new WebSocket("ws://" + window.location.hostname + ":5000");
+    // socket = new WebSocket("ws://" + window.location.hostname + ":5000");
+    socket = new WebSocket("ws://" + "192.168.15.69"+ ":5003");
     socket.onopen = function(e) { console.log("[socket] socket.onopen "); };
     socket.onerror = function(e) { console.log("[socket] socket.onerror "); };
 
@@ -441,7 +442,8 @@
       const payload = message['payload'];
       const token = payload['token'];
       if (token !== undefined && status === "login") {
-        alert(`Token encontrado: ${token}`);
+        alert(`Login realizado com sucesso!`);
+        localStorage.setItem('userData', JSON.stringify(payload));
         document.getElementById("login").remove();
         showChatList();
       }
@@ -469,6 +471,24 @@
     
     function showChatList() {
       document.getElementById('chat-list').style.display = 'block';
+      
+      const str_userData = localStorage.getItem('userData');
+      if (str_userData) {
+        const parseData = JSON.parse(str_userData)
+          const chat_list = {		
+          token: parseData.token,
+          email: parseData.email,
+          username: parseData.username
+        }
+        
+        session.action = "group_list"
+        session.payload = chat_list;
+        let request = JSON.stringify(session);
+        console.log(request)
+        socket.send(request);
+      }
+    	
+	   status = "chat_list"
     }
 
     let btn_login = document.getElementById("btn-login");  
@@ -477,7 +497,7 @@
       let ipt_user = document.getElementById("ipt-user"); 
 
     	const login = {		
-	      username:ipt_user.value,
+	      email:ipt_user.value,
 	      password:ipt_pass.value
 	    };
 	

@@ -2,7 +2,8 @@ from src.main.handler.message_handler import MessageHandler
 from src.data.use_cases.websocket_strategy import WebSocketStrategy
 from src.data.use_cases.mqtt_strategy import MqttStrategy
 from src.presentation.session_payload import SessionPayload
-from src.data.use_cases.connection_manager import ConnecionManager
+from src.data.use_cases.connection_manager import ConnectionManager
+
 
 class SessionComposer:
 
@@ -11,7 +12,7 @@ class SessionComposer:
         self.websocket_server = None
         self.session_id = None
         self.clients = {}
-        self.connection_manager = ConnecionManager(self.clients)
+        self.connection_manager = ConnectionManager(self.clients)
 
     def receiver(self, message_type, message):
         if message_type == "websocket":

@@ -1,7 +1,7 @@
-import time
 import os
-from uuid import uuid4
-from flask import Flask, jsonify, request, render_template
+import threading
+
+from flask import Flask, render_template
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 from src.main.socket.websocket_server import WebSocketServer
@@ -10,16 +10,20 @@ from src.main.composer.session_composer import SessionComposer
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     return render_template("index.html")
 
+
 if __name__ == "__main__":
-    local_ip = os.getenv('LOCAL_IP')
-    flask_port = int(os.getenv('FLASK_PORT'))
-    mqtt_broker_ip = os.getenv('MQTT_BROKER_IP')
-    mqtt_broker_port = int(os.getenv('MQTT_BROKER_PORT'))
-    mqtt_client = MQTTClient(mqtt_broker_ip, mqtt_broker_port)
+    # local_ip = os.getenv('LOCAL_IP')
+    # flask_port = int(os.getenv('FLASK_PORT'))
+    # mqtt_broker_ip = os.getenv('MQTT_BROKER_IP')
+    # mqtt_broker_port = int(os.getenv('MQTT_BROKER_PORT'))
+    local_ip = "192.168.15.69"
+    flask_port = 5003
+    mqtt_client = MQTTClient("192.168.15.69", 1883)
     mqtt_client.connect()
 
     if mqtt_client.connected:

@@ -2,6 +2,7 @@ from uuid import uuid4
 from flask_websockets import WebSockets
 from src.main.composer.session_composer import SessionComposer
 
+
 class WebSocketServer:
     def __init__(self, app, session_composer: SessionComposer):
         self.sockets = WebSockets(app)
