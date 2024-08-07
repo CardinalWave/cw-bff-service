@@ -36,14 +36,6 @@
         background-color: #2f2d3b;
       }
 
-      @media (max-width: 600px) {
-      .elemento {
-            width: 100%;
-            height: auto;
-            background-color: red;
-        }
-      }
-
       .message-container {
 	    margin-bottom: 10px;
       }
@@ -55,7 +47,6 @@
       input {
         width: 100%;
         margin-right: 10px;
-        /* padding: 8px; */
         border: 1px solid #ccc;
         border-radius: 3px;
         box-sizing: border-box;
@@ -149,19 +140,38 @@
       }
 
       .message {
+        width: 75%;
         margin-bottom: 15px;
         padding: 10px;
         background-color: #4b4860;
         border-radius: 10px;
       }
-      .message .name {
+      .message_name {
         font-weight: bold;
         color: #00ff89;
       }
-      .message .text {
-        margin-top: 5px;
+      .message_date {
+        margin-right: 3%;
         color: #ccc;
       }
+      .message_text {
+        margin-top: 5px;
+        color: #e5e5e5;
+      }
+      .message_user {
+        width: 75%;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #4b4860;
+        border-radius: 10px;
+        margin-left: 20%;
+      }
+
+      .message_user .message_name {
+        font-weight: bold;
+        color: #a480ff;
+      }
+
       .input-box {
         font-size: 18px;
         display: flex;
@@ -387,11 +397,11 @@
 
   <body>
   <div id="app">
-    <div class="cardinal">
-      <div class="pixel"></div>
-    </div>
-    <h1>CardinalWave</h1>
     <div id="login">
+      <div class="cardinal">
+        <div class="pixel"></div>
+      </div>
+      <h1>CardinalWave</h1>
       <h3>Usuario</h3>
       <input type="text" id="ipt-user">
       <h3>Senha</h3>
@@ -402,14 +412,7 @@
       </div>
     </div>
     <div id="chat-list">
-      <div class="header">
-        CardinalWave
-      </div>
       <ul class="user-list">
-        <li class="user-item" onclick="handleUserClick('Global')">
-          <div class="user-name">Global</div>
-          <div class="user-email">Lorem ipsum dolor sit amet consectetur, </div>
-        <li class="user-item">
       </ul>
     </div>
     <div id="chat">
@@ -417,13 +420,11 @@
         CardinalWave
       </div>
       <div class="chat-box" id="chat-box">
-        <!-- More messages will go here -->
       </div>
       <div class="input-box">
         <input type="text" placeholder="Type your message..." id="ipt-message">
         <button id="btn-send">Send</button>
       </div>
-      
   </div>
   <script>
     console.log(window.location.host)
@@ -433,20 +434,54 @@
     socket.onopen = function(e) { console.log("[socket] socket.onopen "); };
     socket.onerror = function(e) { console.log("[socket] socket.onerror "); };
 
-    let status = "";
+    function handleSection(section) {
+      console.log(section)
+      switch (section) {
+          case null:
+              break;
+          case 'chat_list':
+              document.getElementById("login").remove();
+              showChatList();
+              break;
+          default:
+              break;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let section = localStorage.getItem('status');
+        if(section === "") {
+          localStorage.setItem('status', 'login')
+        }
+        handleSection(section);
+    });
+
+
     let chat_section = "";
 
     socket.onmessage = function(e) {
-      console.log("[socket] " + e.data);
       const message = JSON.parse(e.data);
       const payload = message['payload'];
-      const token = payload['token'];
+      status = localStorage.getItem('status')
+      token = payload['token'];
       if (token !== undefined && status === "login") {
         alert(`Login realizado com sucesso!`);
         localStorage.setItem('userData', JSON.stringify(payload));
         document.getElementById("login").remove();
         showChatList();
       }
+      if (status == 'chat_list') {
+        const message = JSON.parse(e.data);
+        populateUserList(message.payload.groups)
+      }
+      if (status == 'chat_join') {
+        const message = JSON.parse(e.data)
+        console.log(message)
+        if(message.payload.author !== undefined){
+          addMessage(message.payload.author, message.payload.send_time, message.payload.payload)
+        }
+      }
+
     };
 
     function generateId() {
@@ -456,22 +491,88 @@
     function verifySessionId() {
     	let sessionId = localStorage.getItem("sessionId");
       if (!sessionId) {
-          sessionId = generateId();
+        sessionId = generateId();
         localStorage.setItem("sessionId", sessionId);
       }
 	      return sessionId;
     }  
 
     let sessionId = verifySessionId();
-    console.log(sessionId);
 
     const session = {
       session_id: sessionId,
     };	
     
+    function populateUserList(groups=[]) {
+        const userList = document.querySelector('.user-list');
+        
+        userList.innerHTML = '';
+
+        groups.forEach(group => {
+            const li = document.createElement('li');
+            li.className = 'user-item';
+            li.onclick = () => handleUserClick(group.group_id, group.title);
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'user-name';
+            nameDiv.textContent = group.title;
+            
+            li.appendChild(nameDiv);
+            userList.appendChild(li);
+        });
+    }
+    
+    function formatTime(time) {
+
+      if (typeof time !== 'string') {
+        return 'Entrada inválida';
+      }
+      const timeRegex = /\d{2}:\d{2}/;
+      const match = time.match(timeRegex);
+      return match ? match[0] : 'Hora não encontrada';
+    }
+
+    function addMessage(name, time, text) {
+      const messageContainer = document.createElement('div');
+      const parseData = JSON.parse(localStorage.getItem('userData'));
+      messageContainer.className = 'message';
+      if(name == parseData.username){
+        messageContainer.className = 'message_user';
+      }
+
+      const topDiv = document.createElement('div');
+      topDiv.className = 'top';
+
+      const nameLabel = document.createElement('label');
+      nameLabel.className = 'message_name';
+      nameLabel.textContent = name;
+      topDiv.appendChild(nameLabel);
+
+      const dateLabel = document.createElement('label');
+      dateLabel.className = 'message_date';
+      dateLabel.textContent = formatTime(time);
+      topDiv.appendChild(dateLabel);
+
+      messageContainer.appendChild(topDiv);
+
+      const botDiv = document.createElement('div');
+      botDiv.className = 'bot';
+
+      const textLabel = document.createElement('label');
+      textLabel.className = 'message_text';
+      textLabel.textContent = text;
+      botDiv.appendChild(textLabel);
+
+      messageContainer.appendChild(botDiv);
+
+      const chatBox = document.getElementById('chat-box');
+      chatBox.appendChild(messageContainer);
+    }
+
+
     function showChatList() {
       document.getElementById('chat-list').style.display = 'block';
-      
+
       const str_userData = localStorage.getItem('userData');
       if (str_userData) {
         const parseData = JSON.parse(str_userData)
@@ -480,15 +581,14 @@
           email: parseData.email,
           username: parseData.username
         }
-        
+
         session.action = "group_list"
         session.payload = chat_list;
         let request = JSON.stringify(session);
-        console.log(request)
         socket.send(request);
       }
-    	
-	   status = "chat_list"
+
+      localStorage.setItem('status', "chat_list");
     }
 
     let btn_login = document.getElementById("btn-login");  
@@ -500,45 +600,69 @@
 	      email:ipt_user.value,
 	      password:ipt_pass.value
 	    };
-	
+
       session.action = "login"
       session.payload = login;
-	
+
       let request = JSON.stringify(session);
-      console.log(request)
       socket.send(request);
       ipt_user.value = '';
       ipt_pass.value = '';
-      status = "login"
+      localStorage.setItem('status', "login");
    });
 
-   function showChat(section) {
-      document.getElementById('chat').style.display = 'block';
+   function showChat(section, title) {
+    const elements = document.getElementsByClassName('cardinal');
+    while (elements.length > 0) {
+      elements[0].parentNode.removeChild(elements[0]);
+    }
+    document.getElementById('chat').style.display = 'block';
+    const str_userData = localStorage.getItem('userData');
+    if (str_userData) {
+        const parseData = JSON.parse(str_userData)
+        const chat_join = {		
+        token: parseData.token,
+        group_id: section
+      }
+      session.action = "chat_join"
+      session.payload = chat_join;
+      let request = JSON.stringify(session);
+      socket.send(request);
+    }
+    
+      localStorage.setItem('status', "chat_join");
     }
     
     let btn_send = document.getElementById("btn-send");  
     btn_send.addEventListener("click", function() {
    	  let ipt_message = document.getElementById("ipt-message");
-
+      const parseData = JSON.parse(localStorage.getItem('userData'))
     	const message = {
-	      mensage:ipt_message.value,
-        section:chat_section
+	      token:parseData.token,
+        message:ipt_message.value
       };
-	
-      session.action = "message"
+      session.action = "chat_send"
       session.payload = message;
 	
       let request = JSON.stringify(session);	
-      console.log(request)
-      // socket.send(request);
+      socket.send(request);
       
    });
 
-    function handleUserClick(section) {
+    function handleUserClick(section, title) {
       document.getElementById("chat-list").remove();
-      chat_section = section;
-      showChat(chat_section);
+      showChat(section, title);
     }
+
+    function updateMessageBasedOnWidth() {
+        const messageElement = document.getElementById('message');
+        if (window.innerWidth < 768 && status !== "chat-login") {
+        } else {
+          showChatList()
+        }
+    }
+
+    window.addEventListener('resize', updateMessageBasedOnWidth);
 
   </script>
  </body>
