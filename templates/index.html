@@ -95,7 +95,7 @@
       #chat-list {
         display: none;
       }
-      .header {
+      .chat-header {
         width: 100%;
         background-color: #3ac775;
         font-weight: bold;
@@ -151,7 +151,7 @@
         color: #00ff89;
       }
       .message_date {
-        margin-right: 3%;
+        margin: 3%;
         color: #ccc;
       }
       .message_text {
@@ -164,7 +164,7 @@
         padding: 10px;
         background-color: #4b4860;
         border-radius: 10px;
-        margin-left: 20%;
+        margin-left: 17%;
       }
 
       .message_user .message_name {
@@ -416,9 +416,7 @@
       </ul>
     </div>
     <div id="chat">
-      <div class="header">
-        CardinalWave
-      </div>
+      <div class="chat-header"></div>
       <div class="chat-box" id="chat-box">
       </div>
       <div class="input-box">
@@ -431,46 +429,64 @@
     let token = "";
     // socket = new WebSocket("ws://" + window.location.hostname + ":5000");
     socket = new WebSocket("ws://" + "192.168.15.69"+ ":5003");
-    socket.onopen = function(e) { console.log("[socket] socket.onopen "); };
-    socket.onerror = function(e) { console.log("[socket] socket.onerror "); };
-
-    function handleSection(section) {
-      console.log(section)
-      switch (section) {
-          case null:
-              break;
-          case 'chat_list':
-              document.getElementById("login").remove();
-              showChatList();
-              break;
-          default:
-              break;
-      }
+    socket.onopen = function(e) { console.log("[socket] socket.onopen ");};
+    socket.onerror = function(e) { console.log("[socket] socket.onerror ");};
+    function waitForSocketConnection() {
+    return new Promise((resolve, reject) => {
+        if (socket.readyState === WebSocket.OPEN) {
+          resolve();
+        } else {
+          socket.onopen = () => resolve();
+          socket.onerror = (error) => reject(error);
+        }
+      });
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        await waitForSocketConnection();  // Aguarda a conexão estar aberta
         let section = localStorage.getItem('status');
         if(section === "") {
           localStorage.setItem('status', 'login')
         }
         handleSection(section);
+      } catch(error) {
+        console.error('WebSocket connection error: ', error);
+      }
     });
-
-
-    let chat_section = "";
-
+    function handleSection(section) {
+      console.log(section)
+      switch (section) {
+        case null:
+            break;
+        case 'chat_list':
+            document.getElementById("login").remove();
+            showChatList();
+            break;
+        case 'chat_join':
+            document.getElementById("login").remove();
+            group_id = sessionStorage.getItem('group_id');
+            group_title = sessionStorage.getItem('group_title');
+            showChat(group_id, group_title);
+        default:
+            break;
+      }
+    }
     socket.onmessage = function(e) {
       const message = JSON.parse(e.data);
+      console.log(message)
       const payload = message['payload'];
       status = localStorage.getItem('status')
+      const action = message['action'];
+      console.log(action)
       token = payload['token'];
       if (token !== undefined && status === "login") {
         alert(`Login realizado com sucesso!`);
         localStorage.setItem('userData', JSON.stringify(payload));
-        document.getElementById("login").remove();
+        document.getElementById("login").style.display = "none"
+        localStorage.setItem('status', 'chat_list')
         showChatList();
       }
-      if (status == 'chat_list') {
+      if (status == 'chat_list' || action == 'group_list') {
         const message = JSON.parse(e.data);
         populateUserList(message.payload.groups)
       }
@@ -481,13 +497,10 @@
           addMessage(message.payload.author, message.payload.send_time, message.payload.payload)
         }
       }
-
     };
-
     function generateId() {
 	    return "sessionid_" + Math.random().toString(36).substr(2,9);
     }
-    
     function verifySessionId() {
     	let sessionId = localStorage.getItem("sessionId");
       if (!sessionId) {
@@ -496,34 +509,25 @@
       }
 	      return sessionId;
     }  
-
     let sessionId = verifySessionId();
-
     const session = {
       session_id: sessionId,
     };	
-    
     function populateUserList(groups=[]) {
         const userList = document.querySelector('.user-list');
-        
         userList.innerHTML = '';
-
         groups.forEach(group => {
             const li = document.createElement('li');
             li.className = 'user-item';
             li.onclick = () => handleUserClick(group.group_id, group.title);
-            
             const nameDiv = document.createElement('div');
             nameDiv.className = 'user-name';
             nameDiv.textContent = group.title;
-            
             li.appendChild(nameDiv);
             userList.appendChild(li);
         });
     }
-    
     function formatTime(time) {
-
       if (typeof time !== 'string') {
         return 'Entrada inválida';
       }
@@ -531,7 +535,6 @@
       const match = time.match(timeRegex);
       return match ? match[0] : 'Hora não encontrada';
     }
-
     function addMessage(name, time, text) {
       const messageContainer = document.createElement('div');
       const parseData = JSON.parse(localStorage.getItem('userData'));
@@ -539,40 +542,30 @@
       if(name == parseData.username){
         messageContainer.className = 'message_user';
       }
-
       const topDiv = document.createElement('div');
       topDiv.className = 'top';
-
       const nameLabel = document.createElement('label');
       nameLabel.className = 'message_name';
       nameLabel.textContent = name;
       topDiv.appendChild(nameLabel);
-
       const dateLabel = document.createElement('label');
       dateLabel.className = 'message_date';
       dateLabel.textContent = formatTime(time);
       topDiv.appendChild(dateLabel);
-
       messageContainer.appendChild(topDiv);
-
       const botDiv = document.createElement('div');
       botDiv.className = 'bot';
-
       const textLabel = document.createElement('label');
       textLabel.className = 'message_text';
       textLabel.textContent = text;
       botDiv.appendChild(textLabel);
-
       messageContainer.appendChild(botDiv);
-
       const chatBox = document.getElementById('chat-box');
       chatBox.appendChild(messageContainer);
     }
-
-
     function showChatList() {
-      document.getElementById('chat-list').style.display = 'block';
-
+      let chat_list = document.getElementById('chat-list');
+      chat_list.style.display = 'block';
       const str_userData = localStorage.getItem('userData');
       if (str_userData) {
         const parseData = JSON.parse(str_userData)
@@ -581,58 +574,64 @@
           email: parseData.email,
           username: parseData.username
         }
-
         session.action = "group_list"
         session.payload = chat_list;
         let request = JSON.stringify(session);
         socket.send(request);
       }
-
-      localStorage.setItem('status', "chat_list");
     }
-
     let btn_login = document.getElementById("btn-login");  
     btn_login.addEventListener("click", function() {
    	  let ipt_pass = document.getElementById("ipt-password");
       let ipt_user = document.getElementById("ipt-user"); 
-
     	const login = {		
 	      email:ipt_user.value,
 	      password:ipt_pass.value
 	    };
-
       session.action = "login"
       session.payload = login;
-
       let request = JSON.stringify(session);
       socket.send(request);
       ipt_user.value = '';
       ipt_pass.value = '';
       localStorage.setItem('status', "login");
    });
-
-   function showChat(section, title) {
-    const elements = document.getElementsByClassName('cardinal');
-    while (elements.length > 0) {
-      elements[0].parentNode.removeChild(elements[0]);
-    }
-    document.getElementById('chat').style.display = 'block';
-    const str_userData = localStorage.getItem('userData');
-    if (str_userData) {
-        const parseData = JSON.parse(str_userData)
-        const chat_join = {		
-        token: parseData.token,
-        group_id: section
+    function showChat(section, title) {
+      const elements = document.getElementsByClassName('cardinal');
+      while (elements.length > 0) {
+        elements[0].parentNode.removeChild(elements[0]);
       }
-      session.action = "chat_join"
-      session.payload = chat_join;
-      let request = JSON.stringify(session);
-      socket.send(request);
-    }
-    
+      let chat_box = document.getElementById('chat');
+      let chat_header = document.getElementsByClassName('chat-header');
+      if (chat_header.length > 0) {
+        chat_header[0].innerHTML = title;
+      }
+      chat_box.style.display = 'block';
+      const str_userData = localStorage.getItem('userData');
+      if (str_userData) {
+          const parseData = JSON.parse(str_userData)
+          const chat_join = {		
+          token: parseData.token,
+          group_id: section
+        }
+        session.action = "chat_join"
+        session.payload = chat_join;
+        let request = JSON.stringify(session);
+        socket.send(request);
+      }
       localStorage.setItem('status', "chat_join");
+      if (window.innerWidth > 768){
+        chat_box.style.marginLeft = "20%";
+        chat_box.style.width = "80%";
+        showChatList()
+        chat_list = document.getElementById("chat-list")
+        chat_list.style.display = "block";
+        chat_list.style.position = "absolute";
+        chat_list.style.top = 0;
+        chat_list.style.left = 0;
+        chat_list.style.width = "20%";
+      }
     }
-    
     let btn_send = document.getElementById("btn-send");  
     btn_send.addEventListener("click", function() {
    	  let ipt_message = document.getElementById("ipt-message");
@@ -643,27 +642,62 @@
       };
       session.action = "chat_send"
       session.payload = message;
-	
       let request = JSON.stringify(session);	
       socket.send(request);
-      
    });
-
     function handleUserClick(section, title) {
-      document.getElementById("chat-list").remove();
+      if (sessionStorage.getItem('group_id') || sessionStorage.getItem('group_title')){
+        logoutChat();
+        clearChat();
+      }
       showChat(section, title);
+      sessionStorage.setItem('group_id', section);
+      sessionStorage.setItem('group_title', title);
+      chat_list = document.getElementById("chat-list")
+      if (window.innerWidth > 768) {
+        chat_list.style.display = "block";
+        chat_list.style.position = "absolute";
+        chat_list.style.top = 0;
+        chat_list.style.left = 0;
+        chat_list.style.width = "20%";
+      } else {
+        chat_list.style.display = "none";
+      }
     }
-
-    function updateMessageBasedOnWidth() {
-        const messageElement = document.getElementById('message');
-        if (window.innerWidth < 768 && status !== "chat-login") {
-        } else {
-          showChatList()
+    function logoutChat(){
+      const parseData = JSON.parse(localStorage.getItem('userData'));
+      const group_id = sessionStorage.getItem('group_id')
+      const logout = {
+        token: parseData.token,
+        group_id: group_id
+      };
+      session.action = "chat_leave";
+      session.payload = logout;
+      let request = JSON.stringify(session);
+      socket.send(request);
+    }
+    function clearChat() {
+      let chat_box = document.getElementById('chat-box')
+      let chat_header = document.getElementsByClassName('chat-header')
+      while (chat_box.firstChild){ 
+        chat_box.removeChild(chat_box.firstChild);
+      }
+    }
+    function handleTouchStart(event) {
+      startX = event.touches[0].clientX; // Captura a posição X inicial do toque
+    }
+    function handleTouchMove(event) {
+      if (!startX) return;
+      if (status === 'chat_join') {
+        const currentX = event.touches[0].clientX;
+        const distance = currentX - startX;
+        if (distance > 150) { 
+            console.log('Deslizar para a esquerda detectado!');
         }
+      }
     }
-
-    window.addEventListener('resize', updateMessageBasedOnWidth);
-
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove);
   </script>
  </body>
 </html>
