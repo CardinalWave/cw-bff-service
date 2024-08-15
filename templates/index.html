@@ -425,6 +425,15 @@
       </div>
   </div>
   <script>
+    // - Registrar
+    // - Logout do App
+    // - Criar Grupo
+    // - Pesquisar Grupo
+    // - Ver Usuarios
+    // - Entrar No Grupo
+    // - Sair do Grupo
+    // - Notificar Mensagens
+
     console.log(window.location.host)
     let token = "";
     // socket = new WebSocket("ws://" + window.location.hostname + ":5000");
@@ -466,6 +475,7 @@
             document.getElementById("login").remove();
             group_id = sessionStorage.getItem('group_id');
             group_title = sessionStorage.getItem('group_title');
+            logoutChat();
             showChat(group_id, group_title);
         default:
             break;
@@ -692,12 +702,20 @@
         const currentX = event.touches[0].clientX;
         const distance = currentX - startX;
         if (distance > 150) { 
-            console.log('Deslizar para a esquerda detectado!');
+          let chat = document.getElementById('chat');
+          chat.style.display = "none";
+          showChatList();
         }
       }
     }
-    document.addEventListener('touchstart', handleTouchStart);
-    document.addEventListener('touchmove', handleTouchMove);
+    function windowMinimal() {
+      if(window.innerWidth < 768) {
+        document.addEventListener('touchstart', handleTouchStart);
+        document.addEventListener('touchmove', handleTouchMove);
+      }
+    }
+    windowMinimal();
+    
   </script>
  </body>
 </html>
