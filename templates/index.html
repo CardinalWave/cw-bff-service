@@ -18,6 +18,14 @@
         overflow: hidden;
       }
 
+      h3 {
+        margin-bottom: 1%;
+      }
+
+      h4 {
+        margin-bottom: 1%;
+      }
+
       #app {
         max-width: 100%;
         height: 100%;
@@ -26,9 +34,10 @@
         border-radius: 5px;
       }
 
-      #login {
+      #init{
         margin:auto;
         margin-top: 10rem;
+        margin-bottom: 10rem;
         width: 90%;
         padding: 10px;
         border: 1px solid #110f1a8e;
@@ -54,12 +63,13 @@
       }
 
       .btn-inputs{
+        margin-top: 5%;
         display: flex;
         justify-content: space-between; /* Distribui os itens flexíveis com espaçamento entre eles */
         align-items: center; /* Alinha os itens verticalmente ao centro */
       }
 
-      .btn-login {
+      .btn-green {
         text-align: right;
         padding: 10px 40px;
         margin-top:5px;
@@ -72,7 +82,7 @@
         font-weight: bold;
         transition: box-shadow 0.3s ease-in-out #00ff8873;
       }
-      .btn-login:hover {
+      .btn-green:hover {
         box-shadow: 0 0 3px 4px #00ff8873;
       }
       
@@ -393,25 +403,25 @@
     }
     </style>
   </head>
-  <body>
+  <body id="body">
   <div id="app">
-    <div id="login">
+    <div id="init">
       <div class="cardinal">
         <div class="pixel"></div>
-        </div>
-        <h1>CardinalWave</h1>
-        <div class="innital">
-          <h3>Usuario</h3>
+      </div>
+      <h1>CardinalWave</h1>
+      <div id="login">
+        <h3>Usuario</h3>
         <input type="text" id="ipt-user">
         <h3>Senha</h3>
         <input type="password" id="ipt-password">
         <div class="btn-inputs">
-          <button id="btn-login" class="btn-login">Entrar</button>
+          <button id="btn-login" class="btn-green">Entrar</button>
           <button id="btn-register" class="btn-red">Criar</button>
         </div>
       </div>
+      <div id="register"></div>
     </div>
-    <div id="register"></div>
     <div id="chat-list">
       <button id="btn-logout" class="btn-red">Sair</button>
       <ul class="user-list">
@@ -428,7 +438,7 @@
   </div>
   <script>
     // - Registrar
-    // - Logout do App
+    // - Logout do App - Feito
     // - Criar Grupo
     // - Pesquisar Grupo
     // - Ver Usuarios
@@ -470,11 +480,11 @@
       case null:
           break;
       case 'chat_list':
-          document.getElementById("login").remove();
+          document.getElementById("init").remove();
           showChatList();
           break;
       case 'chat_join':
-          document.getElementById("login").remove();
+          document.getElementById("init").remove();
           group_id = sessionStorage.getItem('group_id');
           group_title = sessionStorage.getItem('group_title');
           logoutChat();
@@ -494,7 +504,7 @@
     if (token !== undefined && status === "login") {
       alert(`Login realizado com sucesso!`);
       localStorage.setItem('userData', JSON.stringify(payload));
-      document.getElementById("login").style.display = "none"
+      document.getElementById("init").style.display = "none"
       localStorage.setItem('status', 'chat_list')
       showChatList();
     }
@@ -508,6 +518,9 @@
       if(message.payload.author !== undefined){
         addMessage(message.payload.author, message.payload.send_time, message.payload.payload)
       }
+    }
+    if (payload['error']){
+      alert(payload['message'])
     }
   };
   function generateId() {
@@ -608,6 +621,27 @@
     ipt_pass.value = '';
     localStorage.setItem('status', "login");
   });
+  if (document.getElementById("btn-confirm")) {
+    let btn_confirm = document.getElementById("btn-confirm");
+    btn_confirm.addEventListener("click", function() {
+      let ipt_email = document.getElementById("ipt-email");
+      let ipt_username = document.getElementById("ipt-username");
+      let ipt_password = document.getElementById("ipt-pass");
+      let ipt_password_conf = document.getElementById("ipt-pass-conf");
+      const register = {
+        username: ipt_username.value(),
+        email: ipt_email.value(),
+        password: ipt_password()
+      }
+      session.action = "register";
+      session.payload = register;
+      console.log(session)
+      let request = JSON.stringify(session);
+      // socket.send(request);
+    });
+  }
+
+  
   let btn_logout = document.getElementById("btn-logout");
   btn_logout.addEventListener("click", function () {
     const str_userData = localStorage.getItem('userData');
@@ -676,10 +710,44 @@
     let request = JSON.stringify(session);	
     socket.send(request);
    });
-   let btn_register = document.getElementById("btn-register");
-   btn_register.addEventListener("click", function() {
-    
-   });
+  let btn_register = document.getElementById("btn-register");
+  btn_register.addEventListener("click", function() {
+    document.getElementById("login").style.display = "none";
+    let register_box = document.getElementById("register");
+    const lb_email = document.createElement('h3');
+    lb_email.textContent= 'Email';
+    register_box.appendChild(lb_email);
+    const ipt_email = document.createElement('input');
+    register_box.appendChild(ipt_email);
+    const lb_username = document.createElement('h3');
+    lb_username.textContent = 'Username';
+    register_box.appendChild(lb_username);
+    const ipt_username = document.createElement('input');
+    register_box.appendChild(ipt_username);
+    const lb_senha = document.createElement('h3');
+    lb_senha.textContent = 'Senha';
+    register_box.appendChild(lb_senha);
+    const ipt_senha = document.createElement('input');
+    register_box.appendChild(ipt_senha);
+    const lb_senha_conf = document.createElement('h4');
+    lb_senha_conf.textContent = 'Confirme a sua senha';
+    register_box.appendChild(lb_senha_conf);
+    const ipt_senha_conf = document.createElement('input');
+    register_box.appendChild(ipt_senha_conf)
+    const input_box = document.createElement('div');
+    const btn_confirm = document.createElement('button');
+    btn_confirm.className = 'btn-green';
+    btn_confirm.id = 'btn-confirm';
+    btn_confirm.textContent = 'Entrar';
+    input_box.appendChild(btn_confirm);
+    const btn_cancelar = document.createElement('button');
+    btn_cancelar.className = 'btn-red';
+    btn_cancelar.textContent = 'Limpar';
+    btn_cancelar.id = 'btn-cancelar';
+    input_box.className = "btn-inputs";
+    input_box.appendChild(btn_cancelar);
+    register_box.appendChild(input_box)
+  });
   function handleUserClick(section, title) {
     if (sessionStorage.getItem('group_id') || sessionStorage.getItem('group_title')){
       logoutChat();
@@ -737,6 +805,10 @@
     if(window.innerWidth < 768) {
       document.addEventListener('touchstart', handleTouchStart);
       document.addEventListener('touchmove', handleTouchMove);
+    }
+    if(window.innerWidth > 768) {
+      let init = document.getElementById("init");
+      init.style.width = "20%";
     }
   }
   windowMinimal();
