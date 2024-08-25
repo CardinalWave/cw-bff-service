@@ -15,7 +15,7 @@
         padding: 0;
         color: #f5f2f2;
         display: block;
-        overflow: hidden;
+        overflow: auto;
       }
 
       h3 {
@@ -70,8 +70,9 @@
       }
 
       .btn-green {
-        text-align: right;
-        padding: 10px 40px;
+        text-align: center;
+        width: 35%;
+        padding: 10px 0px;
         margin-top:5px;
         background-color: #00ff89;
         color: #1f1f1f;
@@ -87,8 +88,9 @@
       }
       
       .btn-red {
-        text-align: left;
-        padding: 10px 40px;
+        text-align: center;
+        width: 35%;
+        padding: 10px 0px;
         margin-top:5px;
         background-color: #f75750;
         color: #1f1f1f;
@@ -102,8 +104,71 @@
       .btn-red:hover {
         box-shadow: 0 0 3px 4px #F7614F;
       }
+      #register {
+        display: none;
+      }
       #chat-list {
         display: none;
+      }
+      .pagination {
+          display: flex;
+          align-items: center;
+          background-color: #2f2d3b;
+          height: 40px;
+          border-radius: 10px;
+          overflow: hidden; /* Remove a sobreposição */
+        }
+
+      .pagination button {
+        flex: 1;
+        display: inline-block;
+        padding: 5px 10px;
+        border: 1px solid #2f2d3b;
+        border-radius: 5px;
+        color: gainsboro;
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: bold;
+        background-color: #2f2d3b;
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .pagination button:hover,
+      .pagination button.active {
+        background-color: #3ac775;
+        color: white;
+        border-color: #3ac775;
+      }
+
+      .pagination button.disabled {
+        color: #666;
+        border-color: #2f2d3b;
+        pointer-events: none;
+      }
+
+      .pagination .first,
+      .pagination .last {
+        padding: 5px 15px;
+      }
+
+      .pagination .first:hover,
+      .pagination .last:hover {
+        background-color: #3ac775;
+        color: white;
+      }
+
+      .pagination button:not(:last-child) {
+        border-right: 1px solid #2f2d3b; /* Adiciona borda direita entre os botões */
+      }
+
+      .pagination button:first-child {
+        border-radius: 5px 0 0 5px; /* Apenas os cantos externos são arredondados */
+      }
+
+      .pagination button:last-child {
+        border-radius: 0 5px 5px 0; /* Apenas os cantos externos são arredondados */
+        border-right: none; /* Remove a borda direita do último botão */
       }
       .chat-header {
         width: 100%;
@@ -142,7 +207,7 @@
         display: none;
       }
       .chat-box {
-        height: 80vh;
+        height: 85vh;
         overflow-y: scroll;
         padding: 10px;
         background-color: #3e3c4a;
@@ -174,7 +239,7 @@
         padding: 10px;
         background-color: #4b4860;
         border-radius: 10px;
-        margin-left: 17%;
+        margin-left: 17vw;
       }
 
       .message_user .message_name {
@@ -183,7 +248,6 @@
       }
 
       .input-box {
-        font-size: 18px;
         display: flex;
         justify-content: space-between;
       }
@@ -195,7 +259,7 @@
         margin-top: 8px;
         margin-left: 5px;
         margin-right: 10px;
-        height: 28px;
+        height: 40px;
       }
       .input-box button {
         padding: 10px 20px;
@@ -420,12 +484,35 @@
           <button id="btn-register" class="btn-red">Criar</button>
         </div>
       </div>
-      <div id="register"></div>
+      <div id="register">
+        <div id="register_box">
+          <h3>Email</h3>
+          <input type="text" id="ipt-email">
+          <h3>Nome</h3>
+          <input type="text" id="ipt-username">
+          <h3>Senha</h3>
+          <input type="password" id="ipt-pass">
+          <h3>Confirme sua senha</h3>
+          <input type="password" id="ipt-pass-conf">
+        </div>
+        <div class="btn-inputs">
+          <button id="btn-confirm" class="btn-green">Entrar</button>
+          <button id="btn-clear" class="btn-red">Limpar</button>
+        </div>
+      </div>
     </div>
     <div id="chat-list">
-      <button id="btn-logout" class="btn-red">Sair</button>
+      <div class="cardinal">
+        <div class="pixel"></div>
+      </div>
+      <div class="pagination">
+        <button>Grupos</button>
+        <button>Todos</button>
+        <button>Criar</button>
+      </div>
       <ul class="user-list">
       </ul>
+      <button id="btn-logout" class="btn-red">Sair</button>
     </div>
     <div id="chat">
       <div class="chat-header"></div>
@@ -621,29 +708,44 @@
     ipt_pass.value = '';
     localStorage.setItem('status', "login");
   });
-  if (document.getElementById("btn-confirm")) {
-    let btn_confirm = document.getElementById("btn-confirm");
-    btn_confirm.addEventListener("click", function() {
-      let ipt_email = document.getElementById("ipt-email");
-      let ipt_username = document.getElementById("ipt-username");
-      let ipt_password = document.getElementById("ipt-pass");
-      let ipt_password_conf = document.getElementById("ipt-pass-conf");
-      const register = {
-        username: ipt_username.value(),
-        email: ipt_email.value(),
-        password: ipt_password()
-      }
-      session.action = "register";
-      session.payload = register;
-      console.log(session)
-      let request = JSON.stringify(session);
-      // socket.send(request);
-    });
+
+  function clearInputRegister(){
+    document.getElementById("ipt-email").value = "";
+    document.getElementById("ipt-username").value = "";
+    document.getElementById("ipt-pass").value = "";
+    document.getElementById("ipt-pass-conf").value = "";
   }
 
+  let btn_confirm = document.getElementById("btn-confirm");
+  btn_confirm.addEventListener("click", function() {
+    let ipt_email = document.getElementById("ipt-email");
+    let ipt_username = document.getElementById("ipt-username");
+    let ipt_password = document.getElementById("ipt-pass");
+    let ipt_password_conf = document.getElementById("ipt-pass-conf");
+    if (ipt_password.value != ipt_password_conf.value) {
+      alert("Senhas diferentes");
+      clearInputRegister();
+      return;
+    }
+    const register = {
+      username: ipt_username.value,
+      email: ipt_email.value,
+      password: ipt_password.value
+    }
+    session.action = "register";
+    session.payload = register;
+    console.log(session)
+    let request = JSON.stringify(session);
+    socket.send(request);
+  });
+
+  let btn_clear = document.getElementById("btn-clear");
+  btn_clear.addEventListener("click", function() {
+    clearInputRegister();
+  })
   
   let btn_logout = document.getElementById("btn-logout");
-  btn_logout.addEventListener("click", function () {
+  btn_logout.addEventListener("click", function() {
     const str_userData = localStorage.getItem('userData');
     if (str_userData) {
       const parseData = JSON.parse(str_userData)
@@ -662,10 +764,6 @@
     }
   })
   function showChat(section, title) {
-    const elements = document.getElementsByClassName('cardinal');
-    while (elements.length > 0) {
-      elements[0].parentNode.removeChild(elements[0]);
-    }
     let chat_box = document.getElementById('chat');
     let chat_header = document.getElementsByClassName('chat-header');
     if (chat_header.length > 0) {
@@ -713,40 +811,7 @@
   let btn_register = document.getElementById("btn-register");
   btn_register.addEventListener("click", function() {
     document.getElementById("login").style.display = "none";
-    let register_box = document.getElementById("register");
-    const lb_email = document.createElement('h3');
-    lb_email.textContent= 'Email';
-    register_box.appendChild(lb_email);
-    const ipt_email = document.createElement('input');
-    register_box.appendChild(ipt_email);
-    const lb_username = document.createElement('h3');
-    lb_username.textContent = 'Username';
-    register_box.appendChild(lb_username);
-    const ipt_username = document.createElement('input');
-    register_box.appendChild(ipt_username);
-    const lb_senha = document.createElement('h3');
-    lb_senha.textContent = 'Senha';
-    register_box.appendChild(lb_senha);
-    const ipt_senha = document.createElement('input');
-    register_box.appendChild(ipt_senha);
-    const lb_senha_conf = document.createElement('h4');
-    lb_senha_conf.textContent = 'Confirme a sua senha';
-    register_box.appendChild(lb_senha_conf);
-    const ipt_senha_conf = document.createElement('input');
-    register_box.appendChild(ipt_senha_conf)
-    const input_box = document.createElement('div');
-    const btn_confirm = document.createElement('button');
-    btn_confirm.className = 'btn-green';
-    btn_confirm.id = 'btn-confirm';
-    btn_confirm.textContent = 'Entrar';
-    input_box.appendChild(btn_confirm);
-    const btn_cancelar = document.createElement('button');
-    btn_cancelar.className = 'btn-red';
-    btn_cancelar.textContent = 'Limpar';
-    btn_cancelar.id = 'btn-cancelar';
-    input_box.className = "btn-inputs";
-    input_box.appendChild(btn_cancelar);
-    register_box.appendChild(input_box)
+    document.getElementById("register").style.display = "block"
   });
   function handleUserClick(section, title) {
     if (sessionStorage.getItem('group_id') || sessionStorage.getItem('group_title')){
@@ -808,7 +873,8 @@
     }
     if(window.innerWidth > 768) {
       let init = document.getElementById("init");
-      init.style.width = "20%";
+      init.style.width = "30%";
+      init.style
     }
   }
   windowMinimal();
