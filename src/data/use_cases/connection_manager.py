@@ -12,7 +12,7 @@ class ConnectionManager:
             if socket not in self.clients:
                 self.clients[socket] = Client(socket=socket, session_id=session_id)
                 connection = self.clients[socket]
-                print(f"New connection: session_id = {connection.session_id[0][0]}")
+                print(f"New connection: session_id = {connection.session_id}")
         # Remove sockets
         inactive_sockets = [socket for socket in self.clients if socket not in self.sockets]
         for socket in inactive_sockets:

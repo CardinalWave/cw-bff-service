@@ -29,9 +29,8 @@ class SessionComposer:
         self._handle(session_payload)
         self.session_id = session_payload.session.session_id
 
-    def _handle(self, session_payload):
+    def _handle(self, session_payload: SessionPayload):
         session_payload = self.handler.handle(session_payload)
-        print(session_payload.session.session_id[0])
 
     def set_sockets(self, websocketserver):
         self.websocket_server = websocketserver

@@ -15,7 +15,7 @@
         padding: 0;
         color: #f5f2f2;
         display: block;
-        overflow: auto;
+        overflow-y: auto;
       }
 
       h3 {
@@ -110,14 +110,77 @@
       #chat-list {
         display: none;
       }
+
+      .modal{
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0,0,0,0.4);
+      }
+      .modal-title {
+        color: #f5f2f2;
+      }
+      .modal-content {
+        background-color: #2f2d3b;
+        margin: 15% auto; /* Espaçamento do topo e centraliza horizontalmente */
+        padding: 20px;
+        width: 80%; /* Largura do modal */
+        max-width: 500px; /* Largura máxima do modal */
+      }
+
+      .close {
+        color: #f5f2f2;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      /* Estilo do formulário dentro do modal */
+      .modal-form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .modal-form input {
+        margin-bottom: 10px;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      /* .modal-form button {
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+      } */
+
+      .modal-form button:hover {
+        background-color: #45a049;
+      }
       .pagination {
-          display: flex;
-          align-items: center;
-          background-color: #2f2d3b;
-          height: 40px;
-          border-radius: 10px;
-          overflow: hidden; /* Remove a sobreposição */
-        }
+        display: flex;
+        align-items: center;
+        background-color: #2f2d3b;
+        height: 40px;
+        border-radius: 10px;
+        overflow: hidden; /* Remove a sobreposição */
+      }
 
       .pagination button {
         flex: 1;
@@ -209,6 +272,7 @@
       .chat-box {
         height: 85vh;
         overflow-y: scroll;
+        overflow-x: hidden;
         padding: 10px;
         background-color: #3e3c4a;
         border-radius: 10px;
@@ -506,9 +570,19 @@
         <div class="pixel"></div>
       </div>
       <div class="pagination">
-        <button>Grupos</button>
-        <button>Todos</button>
-        <button>Criar</button>
+        <button id="group-list">Grupos</button>
+        <button id="group-join">Entrar</button>
+        <button id="group-create">Criar</button>
+      </div>
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2 id="modal-title" class="modal-title"></h2>
+          <form class="modal-form">
+              <input type="text" id="userInput" placeholder="Digite algo...">
+              <button type="button" id="submitBtn" class="btn-green">Enviar</button>
+          </form>
+        </div>
       </div>
       <ul class="user-list">
       </ul>
@@ -524,7 +598,7 @@
       </div>
   </div>
   <script>
-    // - Registrar
+    // - Registrar - Feito
     // - Logout do App - Feito
     // - Criar Grupo
     // - Pesquisar Grupo
@@ -832,6 +906,49 @@
       chat_list.style.display = "none";
     }
   }
+  let btn_group_create = document.getElementById("group-create");
+  btn_group_create.addEventListener("click", function() {
+    const message = {title: ""};
+    openModal("Digite o Titulo do grupo", message, "title", "group_create");
+  })
+  let btn_group_join = document.getElementById("group-join");
+  btn_group_join.addEventListener("click", function() {
+    const parseData = JSON.parse(localStorage.getItem('userData'));
+    const message = {
+      token:parseData.token,
+      message: ""
+    };
+    openModal("Digite o Id do grupo", message, "message", "group_join");
+  });
+  function openModal(label, message, property, action){
+    let modal = document.getElementById('modal');
+    let span = document.getElementsByClassName('close')[0];
+    let title = document.getElementById("modal-title");
+    let btn_sub = document.getElementById("submitBtn");
+    let ipt_sub = document.getElementById("userInput");
+    title.textContent = label
+    modal.style.display = "block";
+    window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+    }
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    btn_sub.onclick = function(){
+      if (ipt_sub.value !== "" ){
+        message[property] = ipt_sub.value;
+        session.action = action;
+        session.payload = message;
+        console.log(session);
+        let request = JSON.stringify(session);	
+        socket.send(request);
+      }
+      ipt_sub.value = "";
+    }
+  }
+
   function logoutChat(){
     const parseData = JSON.parse(localStorage.getItem('userData'));
     const group_id = sessionStorage.getItem('group_id')
@@ -874,8 +991,7 @@
     if(window.innerWidth > 768) {
       let init = document.getElementById("init");
       init.style.width = "30%";
-      init.style
-    }
+      }
   }
   windowMinimal();
     
