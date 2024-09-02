@@ -2,10 +2,11 @@ import threading
 import time
 import paho.mqtt.client as mqtt
 from src.main.composer.session_composer import SessionComposer
+from src.config.config import Config
 
 
 class MQTTClient:
-    def __init__(self, broker_ip="192.168.15.69", broker_port=1883):
+    def __init__(self, broker_ip=Config.MQTT_BROKER_IP, broker_port=Config.MQTT_BROKER_PORT):
         self.broker_ip = broker_ip
         self.broker_port = broker_port
         self.client = mqtt.Client()
