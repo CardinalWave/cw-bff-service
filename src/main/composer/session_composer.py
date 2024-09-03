@@ -3,6 +3,7 @@ from src.data.use_cases.websocket_strategy import WebSocketStrategy
 from src.data.use_cases.mqtt_strategy import MqttStrategy
 from src.presentation.session_payload import SessionPayload
 from src.data.use_cases.connection_manager import ConnectionManager
+from src.domain.models.client import Client
 
 
 class SessionComposer:
@@ -35,5 +36,7 @@ class SessionComposer:
     def set_sockets(self, websocketserver):
         self.websocket_server = websocketserver
 
-    def update_socket(self, active_sockets):
-        self.connection_manager.update_clients(active_sockets, self.session_id)
+    def update_socket(self, socket_, active_sockets, message):
+        session_payload = SessionPayload(message)
+        session_id = session_payload.session.session_id
+        self.connection_manager.update_clients(socket_, active_sockets, session_id)
