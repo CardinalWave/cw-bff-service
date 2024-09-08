@@ -31,8 +31,12 @@ class ConnectionManager:
                 if client.session_id == session_id:
                     print(f'Client: {client} | socket: {client.socket_id} | socket_obj: {client.socket}')
                     for socket in self.sockets:
+                        print(f'Websocket: {websocket}')
+                        print(f'socket: {socket.__repr__()}')
                         if websocket == socket.__repr__():
                             socket.send(message)
+                        else:
+                            print(f'Não encontrado: {socket.__repr__()}')
                     return client
             except Exception as e:
                 print(f"Erro ao enviar mensagem para o socket {client.socket_id}: {e}")

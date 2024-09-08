@@ -609,8 +609,8 @@
 
   console.log(window.location.host)
   let token = "";
-  // socket = new WebSocket("ws://" + window.location.hostname + ":5000");
-  socket = new WebSocket("ws://" + "192.168.15.69"+ ":5004");
+  socket = new WebSocket("ws://" + window.location.hostname + ":5004");
+ // socket = new WebSocket("ws://" + "192.168.15"+ ":5004");
   socket.onopen = function(e) { console.log("[socket] socket.onopen ");};
   socket.onerror = function(e) { console.log("[socket] socket.onerror ");};
   function waitForSocketConnection() {

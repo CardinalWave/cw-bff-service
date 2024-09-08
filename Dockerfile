@@ -10,20 +10,24 @@ COPY requirements.txt .
 # Instala as propriedades necessarias
 RUN apk add --no-cache git build-base
 
-# Instala as dependências do Python
+# Instala as dependências do Pythonz
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia todos os arquivos do diretório atual para o diretório de trabalho no contêiner
 COPY . .
 
 # Define variáveis de ambiente para o IP e porta do MQTT
-ENV MQTT_BROKER_IP=192.168.12.1
+ENV MQTT_BROKER_IP=mqtt-mosquitto
 ENV MQTT_BROKER_PORT=1883
-ENV LOCAL_IP=172.17.0.2
-ENV FLASK_PORT=5000
+ENV MQTT_TIMESTAMP=60
+ENV CW_BFF_SERVICE=cw-bff-service
+ENV CW_BFF_SERVICE_IP=0.0.0.0
+ENV CW_BFF_SERVICE_PORT=5004
+ENV CW_LOG_TRACE_IP=cw-log-trace
+ENV CW_LOG_TRACE_PORT=5050
 
-# Expor a porta 5000 para o Flask
-EXPOSE 5000
+# Expor a porta 5004 para o WebSocket
+EXPOSE 5004
 
 # Comando para executar a aplicação Flask
 CMD ["python", "main.py"]
