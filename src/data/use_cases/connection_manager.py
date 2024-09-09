@@ -11,21 +11,20 @@ class ConnectionManager:
         print(f'Old: {self.sockets}')
         self.sockets = active_sockets
         socket_ident.session_id = session_id
-        exists = any(ws == socket_ident.socket for ws, _ in self.clients.items())
-        if not exists:
-            self.clients[socket_ident.socket] = socket_ident
-            print(f'Client: {socket_ident} | socket: {socket_ident.socket_id} | socket_obj: {socket_ident.socket}')
-            print(f"New connection: session_id = {socket_ident.session_id}")
-        # inactive_sockets = [socket for socket in self.clients if socket not in active_sockets]
-        # for inactive_client in inactive_sockets:
-        #     self.clients.pop(inactive_client)
-        #     print(f"Conexão removida: {inactive_client.socket}")
-
+        for socket, client in self.clients.items():
+            if client.session_id == session_id:
+                print(f'Removendo socket inativo {socket}')
+                del self.clients[socket]
+                break
+        self.clients[socket_ident.socket] = socket_ident
+        print(f'Client: {socket_ident} | socket: {socket_ident.socket_id} | socket_obj: {socket_ident.socket}')
+        print(f"New connection: session_id = {socket_ident.session_id}")
         print("Clientes ativos:", self.clients)
         print("Sockets ativos:", self.sockets)
         return self.sockets
 
-    def send_message(self, session_id, message):
+
+    def send_message(self, session_id, message) -> any:
         for websocket, client in self.clients.items():
             try:
                 if client.session_id == session_id:
