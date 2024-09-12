@@ -10,6 +10,10 @@ COPY requirements.txt .
 # Instala as propriedades necessarias
 RUN apk add --no-cache git build-base
 
+# Atualiza as dependencias
+RUN apt-get install -y build-essential libssl-dev libffi-dev python-dev
+RUN python3 -m pip install --upgrade pip
+
 # Instala as dependências do Pythonz
 RUN pip install --no-cache-dir -r requirements.txt
 
