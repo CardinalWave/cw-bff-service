@@ -36,7 +36,6 @@ class WebSocketServer:
             else:
                 print("WebSocket não encontrado para a mensagem")
 
-
         @self.sockets.on_close
         def close(ws):
             print("Cliente desconectado")

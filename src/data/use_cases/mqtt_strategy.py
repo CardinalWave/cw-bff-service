@@ -8,8 +8,8 @@ class MqttStrategy(MessageStrategy):
     def handle_message(self, session_payload: SessionPayload, connection: ConnectionManager):
         session = session_payload.session
         session_id = session.session_id
-
+        print("Handling MQTT message")
+        print(f'session_id - a ser enviada: {session_id}')
         connection.send_message(session_id, session_payload.package())
 
-        print("Handling MQTT message")
         return session_payload
