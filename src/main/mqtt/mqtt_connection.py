@@ -6,9 +6,10 @@ from src.config.config import Config
 
 
 class MQTTClient:
-    def __init__(self, broker_ip=Config.MQTT_BROKER_IP, broker_port=Config.MQTT_BROKER_PORT):
+    def __init__(self, broker_ip=Config.MQTT_BROKER_IP,
+                 broker_port=Config.MQTT_BROKER_PORT):
         self.broker_ip = broker_ip
-        self.broker_port = broker_port
+        self.broker_port = int(broker_port)
         self.client = mqtt.Client()
         self.connected = False
 
@@ -36,7 +37,7 @@ class MQTTClient:
     def connect(self):
         while not self.connected:
             try:
-                print("Connecting")
+                print(f"Connecting mqtt://{self.broker_ip}:{self.broker_port} - port_type {type(self.broker_port)}")
                 self.client.connect(self.broker_ip, self.broker_port, 60)
                 self.connected = True
                 self.client.subscribe("/server/#")

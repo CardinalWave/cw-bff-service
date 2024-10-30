@@ -3,19 +3,22 @@ from src.data.use_cases.websocket_strategy import WebSocketStrategy
 from src.data.use_cases.mqtt_strategy import MqttStrategy
 from src.presentation.session_payload import SessionPayload
 from src.data.use_cases.connection_manager import ConnectionManager
-from src.domain.models.client import Client
+from src.main.logs.logs_interface import LogInterface
 
 
 class SessionComposer:
 
-    def __init__(self, mqtt_client):
+    def __init__(self, mqtt_client, logger: LogInterface):
         self.mqtt_client = mqtt_client
         self.websocket_server = None
         self.session_id = None
         self.clients = {}
         self.connection_manager = ConnectionManager(self.clients)
+        self.__logger = logger
+
 
     def receiver(self, message_type, message):
+        self.__logger.log_session(session=message, action=message_type)
         if message_type == "websocket":
             strategy = WebSocketStrategy()
             session_payload = SessionPayload(message)
