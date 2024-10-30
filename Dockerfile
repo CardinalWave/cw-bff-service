@@ -1,5 +1,5 @@
 # Use a imagem base do Python
-FROM python:3.11-alpine
+FROM cardinal_wave-python-base-image
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
@@ -8,10 +8,10 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Instala as propriedades necessarias
-RUN apk add --no-cache git build-base libffi-dev
+#RUN apk add --no-cache git build-base libffi-dev
 
 # Atualiza as dependencias
-RUN python3 -m pip install --upgrade pip
+#RUN python3 -m pip install --upgrade pip
 
 # Instala as dependências do Pythonz
 RUN pip install --no-cache-dir -r requirements.txt
