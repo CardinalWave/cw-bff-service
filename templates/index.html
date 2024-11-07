@@ -355,7 +355,7 @@
         --offset-size: 10rem;
         --size: -0;
         --border-color: #000000;
-        --neon-color: #1EF5F3;
+        --neon-color-1: #0740e8;
         --neon-color-2: #1BE9C1;
         --neon-color-3: #1BE984;
         --neon-default-color: #910900;
@@ -515,18 +515,18 @@
         11rem -1rem 0 var(--size) var(--neon-secundary),
         10rem -2rem 0 var(--size) var(--neon-secundary);
 
-        transition: box-shadow 1s ease-in-out;
+        transition: box-shadow 0.25s ease-in-out;
         animation: mudarCores 5s linear infinite;
     }
     @keyframes mudarCores {
         0%, 100% {
-          --neon-color: var(--neon-color);
+          --neon-color: var(--neon-color-3);
         }
         50% {
             --neon-color: var(--neon-color-2);
         }
         60% {
-            --neon-color: var(--neon-color-3)
+            --neon-color: var(--neon-color-1)
         }
     }
     </style>
@@ -539,7 +539,7 @@
       </div>
       <h1>CardinalWave</h1>
       <div id="login">
-        <h3>Usuario</h3>
+        <h3>Email</h3>
         <input type="text" id="ipt-user">
         <h3>Senha</h3>
         <input type="password" id="ipt-password">
@@ -598,19 +598,10 @@
       </div>
   </div>
   <script>
-    // - Registrar - Feito
-    // - Logout do App - Feito
-    // - Criar Grupo
-    // - Pesquisar Grupo
-    // - Ver Usuarios
-    // - Entrar No Grupo
-    // - Sair do Grupo
-    // - Notificar Mensagens
-
   console.log(window.location.host)
   let token = "";
-  socket = new WebSocket("ws://" + window.location.hostname + ":5004");
- // socket = new WebSocket("ws://" + "192.168.15"+ ":5004");
+  // socket = new WebSocket("ws://" + window.location.hostname + ":5004");
+  socket = new WebSocket("ws://" + "localhost"+ ":5004");
   socket.onopen = function(e) { console.log("[socket] socket.onopen ");};
   socket.onerror = function(e) { console.log("[socket] socket.onerror ");};
   function waitForSocketConnection() {
@@ -639,19 +630,20 @@
     console.log(section)
     switch (section) {
       case null:
-          break;
+        break;
       case 'chat_list':
-          document.getElementById("init").remove();
-          showChatList();
-          break;
+        document.getElementById("init").remove();
+        showChatList();
+        break;
       case 'chat_join':
-          document.getElementById("init").remove();
-          group_id = sessionStorage.getItem('group_id');
-          group_title = sessionStorage.getItem('group_title');
-          logoutChat();
-          showChat(group_id, group_title);
+        document.getElementById("init").remove();
+        group_id = sessionStorage.getItem('group_id');
+        group_title = sessionStorage.getItem('group_title');
+        logoutChat();
+        console.log("group_id: " + group_id);
+        showChat(group_id, group_title);
       default:
-          break;
+        break;
     }
   }
   socket.onmessage = function(e) {
@@ -673,9 +665,29 @@
       const message = JSON.parse(e.data);
       populateUserList(message.payload.groups)
     }
+    if (action == 'group_create' & payload['group_id'] != undefined) {
+      const parseData = JSON.parse(localStorage.getItem('userData'))
+      const group_join = {
+        token: parseData.token,
+        group_id: payload['group_id']
+      }
+      session.action = "group_join";
+      session.payload = group_join
+      let request = JSON.stringify(session);
+      socket.send(request);
+    }
+    if (action == 'group_join'){
+      const parseData = JSON.parse(localStorage.getItem('userData'))
+      const group_list= {
+        token: parseData.token
+      }
+      session.action = "group_list";
+      session.payload = group_list
+      let request = JSON.stringify(session);
+      socket.send(request);
+    }
     if (status == 'chat_join') {
       const message = JSON.parse(e.data)
-      console.log(message)
       if(message.payload.author !== undefined){
         addMessage(message.payload.author, message.payload.send_time, message.payload.payload)
       }
@@ -841,7 +853,7 @@
     let chat_box = document.getElementById('chat');
     let chat_header = document.getElementsByClassName('chat-header');
     if (chat_header.length > 0) {
-      chat_header[0].innerHTML = title;
+      chat_header[0].innerHTML = title + " ID:" + section;
     }
     chat_box.style.display = 'block';
     const str_userData = localStorage.getItem('userData');
@@ -916,9 +928,9 @@
     const parseData = JSON.parse(localStorage.getItem('userData'));
     const message = {
       token:parseData.token,
-      message: ""
+      group_id: ""
     };
-    openModal("Digite o Id do grupo", message, "message", "group_join");
+    openModal("Digite o Id do grupo", message, "group_id", "group_join");
   });
   function openModal(label, message, property, action){
     let modal = document.getElementById('modal');
@@ -944,6 +956,7 @@
         console.log(session);
         let request = JSON.stringify(session);	
         socket.send(request);
+        modal.style.display = "none";
       }
       ipt_sub.value = "";
     }
@@ -961,27 +974,6 @@
     let request = JSON.stringify(session);
     socket.send(request);
   }
-
-  window.addEventListener("beforeunload", function (event) {
-    const str_userData = localStorage.getItem('userData');
-    if (str_userData) {
-      const parseData = JSON.parse(str_userData);
-      const logout = {
-        token: parseData.token
-      };
-
-      session.action = "logout";
-      session.payload = logout;
-      let request = JSON.stringify(session);
-
-      socket.send(request);
-
-      localStorage.clear();
-      sessionStorage.clear();
-
-      event.returnValue = '';
-    }
-  });
 
   function clearChat() {
     let chat_box = document.getElementById('chat-box')
