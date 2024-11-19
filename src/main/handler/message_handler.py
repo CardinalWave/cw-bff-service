@@ -2,7 +2,7 @@ from src.domain.use_cases.message_strategy import MessageStrategy
 from src.domain.models.sessions import Session
 
 class MessageHandler:
-    
+
     def __init__(self, strategy: MessageStrategy, connection: any) -> None:
         self.__strategy = strategy
         self.__connection = connection

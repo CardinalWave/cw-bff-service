@@ -1,3 +1,5 @@
 paho-mqtt==1.6.1
 Flask-MQTT==1.2.1
-
+Flask~=3.0.3
+loguru~=0.7.2
+pylint

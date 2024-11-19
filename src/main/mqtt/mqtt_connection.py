@@ -1,3 +1,4 @@
+#pylint: disable=unused-argument, unnecessary-pass, bad-staticmethod-argument
 import threading
 import time
 import paho.mqtt.client as mqtt
@@ -37,7 +38,8 @@ class MQTTClient:
     def connect(self):
         while not self.connected:
             try:
-                print(f"Connecting mqtt://{self.broker_ip}:{self.broker_port} - port_type {type(self.broker_port)}")
+                print(f"Connecting mqtt://{self.broker_ip}:{self.broker_port} -"
+                      f"port_type {type(self.broker_port)}")
                 self.client.connect(self.broker_ip, self.broker_port, 60)
                 self.connected = True
                 self.client.subscribe("/server/#")

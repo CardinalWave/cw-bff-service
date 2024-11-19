@@ -1,4 +1,3 @@
-from paho.mqtt.client import Client as mqttc
 from src.domain.use_cases.message_strategy import MessageStrategy
 from src.presentation.session_payload import SessionPayload
 

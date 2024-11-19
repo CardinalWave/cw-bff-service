@@ -1,4 +1,4 @@
-#pylint: disable=trailing-comma-tuple
+#pylint: disable=trailing-comma-tuple, inconsistent-return-statements
 import json
 
 

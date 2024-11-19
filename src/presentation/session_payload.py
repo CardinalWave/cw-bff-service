@@ -1,3 +1,5 @@
+#pylint: disable=inconsistent-return-statements
+
 import json
 from src.domain.models.sessions import Session
 
@@ -16,7 +18,7 @@ class SessionPayload:
                               action=data.get('action'),
                               payload=data.get('payload'))
             return session
-        except Exception as error:
+        except Exception:
             pass
 
     @staticmethod

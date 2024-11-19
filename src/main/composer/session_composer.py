@@ -1,3 +1,4 @@
+#pylint: disable=attribute-defined-outside-init
 from src.main.handler.message_handler import MessageHandler
 from src.data.use_cases.websocket_strategy import WebSocketStrategy
 from src.data.use_cases.mqtt_strategy import MqttStrategy

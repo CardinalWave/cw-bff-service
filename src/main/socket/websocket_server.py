@@ -1,6 +1,6 @@
-import socket
+#pylint: disable=unused-argument, redefined-outer-name, inconsistent-return-statements, no-else-return, import-error
 from uuid import uuid4
-from flask import Flask, session
+from flask import session
 from flask_websockets import WebSockets, ws
 from src.main.composer.session_composer import SessionComposer
 from src.domain.models.client import Client
